@@ -4,6 +4,7 @@ from agents.dqn import DQN
 import argparse
 import flappy_bird_gymnasium
 import gymnasium as gym
+import numpy as np
 import os
 import pygame
 from time import sleep
@@ -32,7 +33,7 @@ elif args.load:
     trained_agent = DQN(env.observation_space.shape[0], env.action_space.n)
     trained_agent.load_state_dict(torch.load(file, weights_only=True))
 
-    state = env.reset()
+    state, _ = env.reset()
     done = False
     while not done:
         for event in pygame.event.get():
@@ -42,11 +43,10 @@ elif args.load:
                 break
 
         with torch.no_grad():
-            q_values = trained_agent(torch.FloatTensor(state))
+            q_values = trained_agent(torch.FloatTensor(np.array(state)))
             action = torch.argmax(q_values).item()
 
         state, reward, done, _, _ = env.step(action)
         env.render()
-        sleep(0.03)
 
     env.close()
