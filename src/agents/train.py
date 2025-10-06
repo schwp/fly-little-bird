@@ -4,7 +4,7 @@ from utils.ReplayBuffer import ReplayBuffer
 import random
 
 def train_dqn(env, num_episodes=500, batch_size=64, gamma=0.99, 
-              lr=1e-3, epsilon_decay=0.995, min_epsilon=0.01, filename=None):
+              lr=1e-3, epsilon_decay=0.99995, min_epsilon=0.00001, filename=None):
     state_dim = env.observation_space.shape[0]
     action_dim = env.action_space.n
 
@@ -22,7 +22,7 @@ def train_dqn(env, num_episodes=500, batch_size=64, gamma=0.99,
         reward_total = 0
 
         while not done:
-            if random.random() < max(min_epsilon, epsilon_decay**episode):
+            if random.random() < max(min_epsilon, epsilon_decay * episode):
                 action = env.action_space.sample()
             else:
                 with torch.no_grad():
@@ -54,7 +54,7 @@ def train_dqn(env, num_episodes=500, batch_size=64, gamma=0.99,
                 loss.backward() 
                 optimizer.step()
 
-        epsilon = max(min_epsilon, epsilon_decay**episode)
+        epsilon = max(min_epsilon, epsilon_decay*epsilon)
 
         if episode % 10 == 0:
             target_net.load_state_dict(policy_net.state_dict())
@@ -65,7 +65,7 @@ def train_dqn(env, num_episodes=500, batch_size=64, gamma=0.99,
     return policy_net
 
 def train_dqn_pygame(env, num_episodes=500, batch_size=64, gamma=0.99, 
-              lr=1e-3, epsilon_decay=0.995, min_epsilon=0.01, filename=None):
+              lr=1e-3, epsilon_decay=0.99995, min_epsilon=0.00001, filename=None):
     state_dim = env.observation_space.shape[0]
     action_dim = env.action_space.n
 
@@ -83,7 +83,7 @@ def train_dqn_pygame(env, num_episodes=500, batch_size=64, gamma=0.99,
         reward_total = 0
 
         while not done:
-            if random.random() < max(min_epsilon, epsilon_decay**episode):
+            if random.random() < max(min_epsilon, epsilon_decay * epsilon):
                 action = env.action_space.sample()
             else:
                 with torch.no_grad():
@@ -115,7 +115,7 @@ def train_dqn_pygame(env, num_episodes=500, batch_size=64, gamma=0.99,
                 loss.backward() 
                 optimizer.step()
 
-        epsilon = max(min_epsilon, epsilon_decay**episode)
+        epsilon = max(min_epsilon, epsilon_decay * epsilon)
 
         if episode % 5 == 0:
             target_net.load_state_dict(policy_net.state_dict())
